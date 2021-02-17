@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText edtTxt_restaurantId;
+    private EditText edtTxtrestaurantId;
     private Button btn_Enter;
 
     @Override
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(checkEmpty()){
-                    String restaurantId = edtTxt_restaurantId.getText().toString();
+                    String restaurantId = edtTxtrestaurantId.getText().toString();
                     restaurantPage.actionStart(MainActivity.this, restaurantId);
                 }
             }
@@ -32,12 +32,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        edtTxt_restaurantId = findViewById(R.id.edtResID);
+        edtTxtrestaurantId = findViewById(R.id.edtResID);
         btn_Enter = findViewById(R.id.btnEnter);
     }
 
     private boolean checkEmpty(){
-        if (edtTxt_restaurantId.getText().toString().equals("")){
+        if (edtTxtrestaurantId.getText().toString().equals("")){
             Toast.makeText(MainActivity.this, "Can not leave RestaurantId empty", Toast.LENGTH_SHORT).show();
             return false;
         }

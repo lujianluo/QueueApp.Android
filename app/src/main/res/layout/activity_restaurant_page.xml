@@ -7,12 +7,122 @@
     tools:context=".restaurantPage">
 
     <TextView
-        android:id="@+id/restaurantId"
+        android:id="@+id/restaurantName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/restaurantName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="53dp" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/slotACard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/restaurantName"
+        tools:layout_editor_absoluteX="122dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/slotAWaiting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotAPax"
+                android:text="@string/queueWaiting" />
+
+            <TextView
+                android:id="@+id/slotACurrent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotAWaiting"
+                android:text="@string/queueCurrent" />
+
+            <TextView
+                android:id="@+id/slotAPax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paxRange"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/slotBCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/slotACard"
+        tools:layout_editor_absoluteX="163dp" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/slotBPax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/paxRange"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/slotBCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/queueCurrent"
+            android:layout_below="@+id/slotBWaiting"/>
+
+        <TextView
+            android:id="@+id/slotBWaiting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/queueWaiting"
+            android:layout_below="@+id/slotBPax"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/slotCCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/slotBCard"
+        tools:layout_editor_absoluteX="167dp" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/slotCPax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/paxRange"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/slotCCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/queueCurrent"
+            android:layout_below="@+id/slotCWaiting"/>
+
+        <TextView
+            android:id="@+id/slotCWaiting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/queueWaiting"
+            android:layout_below="@+id/slotCPax"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

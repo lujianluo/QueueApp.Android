@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">QueueApp</string>
+    <string name="restaurantName">restaurantName</string>
+    <string name="paxRange">paxRange</string>
+    <string name="queueCurrent">queueCurrent</string>
+    <string name="queueWaiting">queueWaiting</string>
 </resources>
