@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="53dp" />
+        app:layout_constraintGuide_percent="0.03" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/slotACard"
@@ -54,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/paxRange"
                 android:textStyle="bold" />
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
@@ -63,31 +64,32 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/slotACard"
-        tools:layout_editor_absoluteX="163dp" >
+        tools:layout_editor_absoluteX="163dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/slotBPax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/paxRange"
-            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/slotBCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/queueCurrent"
-            android:layout_below="@+id/slotBWaiting"/>
+            <TextView
+                android:id="@+id/slotBPax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paxRange"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/slotBWaiting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/queueWaiting"
-            android:layout_below="@+id/slotBPax"/>
+            <TextView
+                android:id="@+id/slotBCurrent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotBWaiting"
+                android:text="@string/queueCurrent" />
+
+            <TextView
+                android:id="@+id/slotBWaiting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotBPax"
+                android:text="@string/queueWaiting" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
@@ -97,32 +99,102 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@+id/slotBCard"
-        tools:layout_editor_absoluteX="167dp" >
+        tools:layout_editor_absoluteX="167dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/slotCPax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/paxRange"
-            android:textStyle="bold"/>
 
-        <TextView
-            android:id="@+id/slotCCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/queueCurrent"
-            android:layout_below="@+id/slotCWaiting"/>
+            <TextView
+                android:id="@+id/slotCPax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paxRange"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/slotCWaiting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/queueWaiting"
-            android:layout_below="@+id/slotCPax"/>
+            <TextView
+                android:id="@+id/slotCCurrent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotCWaiting"
+                android:text="@string/queueCurrent" />
+
+            <TextView
+                android:id="@+id/slotCWaiting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/slotCPax"
+                android:text="@string/queueWaiting" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="352dp" />
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_btn"
+        app:layout_constraintEnd_toStartOf="@+id/guideline6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+    <Button
+        android:id="@+id/btnQueue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/queue_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline6"
+        app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="205dp" />
+
+    <EditText
+        android:id="@+id/edtTxtphone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:autofillHints=""
+        android:ems="8"
+        android:hint="@string/edtTxt_phone_hints"
+        android:inputType="phone"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnQueue" />
+
+    <Spinner
+        android:id="@+id/slotSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:spinnerMode="dropdown"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/edtTxtphone"
+        app:layout_constraintTop_toBottomOf="@+id/btnQueue" />
+
+    <TextView
+        android:id="@+id/txtInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/red"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtTxtphone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

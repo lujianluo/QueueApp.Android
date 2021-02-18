@@ -4,4 +4,7 @@
     <string name="paxRange">paxRange</string>
     <string name="queueCurrent">queueCurrent</string>
     <string name="queueWaiting">queueWaiting</string>
+    <string name="check_btn">Check</string>
+    <string name="queue_btn">Queue</string>
+    <string name="edtTxt_phone_hints">Phone Number</string>
 </resources>

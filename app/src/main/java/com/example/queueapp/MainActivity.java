@@ -13,14 +13,14 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private EditText edtTxtrestaurantId;
-    private Button btn_Enter;
+    private Button btnEnter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        btn_Enter.setOnClickListener(new View.OnClickListener() {
+        btnEnter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(checkEmpty()){
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         edtTxtrestaurantId = findViewById(R.id.edtResID);
-        btn_Enter = findViewById(R.id.btnEnter);
+        btnEnter = findViewById(R.id.btnEnter);
     }
 
     private boolean checkEmpty(){
