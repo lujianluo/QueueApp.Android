@@ -21,10 +21,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        btnEnter.setOnClickListener(v -> {
-            if(checkEmpty()){
-                String restaurantId = edtTxtrestaurantId.getText().toString();
-                restaurantPage.actionStart(MainActivity.this, restaurantId);
+        btnEnter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(checkEmpty()){
+                    String restaurantId = edtTxtrestaurantId.getText().toString();
+                    restaurantPage.actionStart(MainActivity.this, restaurantId);
+                }
             }
         });
     }

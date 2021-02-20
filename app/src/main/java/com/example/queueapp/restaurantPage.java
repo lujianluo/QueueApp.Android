@@ -126,7 +126,7 @@ public class restaurantPage extends AppCompatActivity {
                             int limit = getLimit(limitKey);
                             if (waiting < limit) {
                                 if(isValidate(false)) {
-                                    checkExistQueue();
+                                    checkExistQueue(false);
                                 }
                             } else {
                                 txtInstruction.setText("Queue limit reach" + System.lineSeparator() + "Please select another slot" + System.lineSeparator() + "Or try again later!");
@@ -149,7 +149,7 @@ public class restaurantPage extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         if(isValidate(true)){
-
+                            checkExistQueue(true);
                         }
                     }
                 });
@@ -216,7 +216,7 @@ public class restaurantPage extends AppCompatActivity {
         txtSlotCWaiting.setText("Waiting: " + slotCWaiting);
         Log.i(TAG, "View update success");
     }
-    public void checkExistQueue (){
+    public void checkExistQueue (boolean isQueueing){
         Log.i(TAG, "checking Existing Queue");
         String phone =edtTxtPhone.getText().toString();
         db.collection("Restaurant").document(restaurantId).collection("QueueRecord")
@@ -228,16 +228,21 @@ public class restaurantPage extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: is successful");
                             QuerySnapshot document = task.getResult();
+                            String phone = edtTxtPhone.getText().toString();
                             if (document.isEmpty()){
-                                String selectedSlot = slotSpinner.getSelectedItem().toString();
-                                String newSlot = selectedSlot.substring(0, 1).toUpperCase() + selectedSlot.substring(1);
-                                String issuedKey = selectedSlot + "Issued";
-                                int issued = getQueueInfo(issuedKey);
-                                String phone = edtTxtPhone.getText().toString();
-                                int newNumber = issued += 1;
-                                queueFirebase(newNumber, phone, newSlot);
+                                if(!isQueueing) {
+                                    String selectedSlot = slotSpinner.getSelectedItem().toString();
+                                    String newSlot = selectedSlot.substring(0, 1).toUpperCase() + selectedSlot.substring(1);
+                                    String issuedKey = selectedSlot + "Issued";
+                                    int issued = getQueueInfo(issuedKey);
+                                    int newNumber = issued += 1;
+                                    queueFirebase(newNumber, phone, newSlot);
+                                    queueingPage.actionStart(restaurantPage.this, restaurantId, phone);
+                                } else {
+                                    txtInstruction.setText("No record found, please get a ticket first!");
+                                }
                             } else {
-                                txtInstruction.setText("you already have a existing queue ticket"  + System.lineSeparator() + "click Check button to check your ticket!");
+                                    queueingPage.actionStart(restaurantPage.this, restaurantId, phone);
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -288,14 +293,14 @@ public class restaurantPage extends AppCompatActivity {
         slotSpinner.setAdapter(slotsAdapter);
     }
 
-    public static void actionStart(Context context, String data){
+    public static void actionStart(Context context, String restaurantId){
         Intent intent = new Intent(context, restaurantPage.class);
-        intent.putExtra("RestaurantId", data);
+        intent.putExtra("restaurantId", restaurantId);
         context.startActivity(intent);
     }
     public void receiveProps(){
         Intent intent = getIntent();
-        restaurantId = intent.getStringExtra("RestaurantId");
+        restaurantId = intent.getStringExtra("restaurantId");
     }
     public void fbLoadData() {
         DocumentReference restaurantInfo = db.collection("Restaurant").document(restaurantId);
