@@ -7,4 +7,11 @@
     <string name="check_btn">Check</string>
     <string name="queue_btn">Queue</string>
     <string name="edtTxt_phone_hints">Phone Number</string>
+    <string name="submit_btn">Submit</string>
+    <string name="queue_btn_inst">Click "Queue" to get a queue ticket</string>
+    <string name="check_btn_inst">Click "Check" to check your queue ticket</string>
+    <string name="enter">Enter</string>
+    <string name="restaurant_id">RESTAURANT ID</string>
+    <string name="welcome">Welcome</string>
+    <string name="txt_instruction">Instruction</string>
 </resources>

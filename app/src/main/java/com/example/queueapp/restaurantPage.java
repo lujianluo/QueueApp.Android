@@ -3,23 +3,20 @@ package com.example.queueapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
+
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,22 +24,22 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 public class restaurantPage extends AppCompatActivity {
-//    SharedPreferences store = getPreferences(MODE_PRIVATE);
 
     private static final String TAG = "restaurantPage";
     private TextView txtRestaurantName;
     private String restaurantId;
-    private String selectedSlot;
     private TextView txtSlotAPax;
     private TextView txtSlotACurrent;
     private TextView txtSlotAWaiting;
@@ -57,6 +54,12 @@ public class restaurantPage extends AppCompatActivity {
     private Button btnQueue;
     private EditText edtTxtPhone;
     private TextView txtInstruction;
+    private TextView txtQueueInst;
+    private TextView txtCheckInst;
+    private Button btnSubmit;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
 
     @Override
     protected void onStart(){
@@ -70,6 +73,7 @@ public class restaurantPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_page);
         receiveProps();
+
     }
     private void initViews(){
         txtRestaurantName = findViewById(R.id.restaurantName);
@@ -87,43 +91,163 @@ public class restaurantPage extends AppCompatActivity {
         btnQueue = findViewById(R.id.btnQueue);
         edtTxtPhone = findViewById(R.id.edtTxtphone);
         txtInstruction = findViewById(R.id.txtInstruction);
+        txtQueueInst = findViewById(R.id.txtQueueInst);
+        txtCheckInst = findViewById(R.id.txtCheckInst);
+        btnSubmit = findViewById(R.id.btnSubmit);
         initSpinner();
+    }
+    public void resetView(){
+        txtCheckInst.setVisibility(View.VISIBLE);
+        txtQueueInst.setVisibility(View.VISIBLE);
+        txtInstruction.setVisibility(View.INVISIBLE);
+        edtTxtPhone.setVisibility(View.INVISIBLE);
+        btnSubmit.setVisibility(View.INVISIBLE);
+        slotSpinner.setVisibility(View.INVISIBLE);
     }
     public void initListener(){
         btnQueue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (slotSpinner.getVisibility() ==  View.INVISIBLE) {
-                    edtTxtPhone.setVisibility(View.VISIBLE);
-                    slotSpinner.setVisibility(View.VISIBLE);
-                    txtInstruction.setText("Enter your phone number and select you preferred slot" + System.lineSeparator() + "Then press queue button one more time!");
-                    txtInstruction.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(getBaseContext(), "btn clicked", Toast.LENGTH_SHORT).show();
-                    if (isValidate(false)) {
-                        txtInstruction.setText("queue success");
-                    }
-                }
-
+                resetView();
+                txtCheckInst.setVisibility(View.INVISIBLE);
+                txtQueueInst.setVisibility(View.INVISIBLE);
+                edtTxtPhone.setVisibility(View.VISIBLE);
+                txtInstruction.setVisibility(View.VISIBLE);
+                btnSubmit.setVisibility(View.VISIBLE);
+                slotSpinner.setVisibility(View.VISIBLE);
+                txtInstruction.setText("Enter your phone number" + System.lineSeparator() + "Select you preferred slot" + System.lineSeparator() + "Then press 'Submit' button!");
+                    btnSubmit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String selectedSlot = slotSpinner.getSelectedItem().toString();
+                            String waitingKey = selectedSlot + "Waiting";
+                            int waiting = getQueueInfo(waitingKey);
+                            String limitKey = selectedSlot + "Limit";
+                            int limit = getLimit(limitKey);
+                            if (waiting < limit) {
+                                if(isValidate(false)) {
+                                    checkExistQueue();
+                                }
+                            } else {
+                                txtInstruction.setText("Queue limit reach" + System.lineSeparator() + "Please select another slot" + System.lineSeparator() + "Or try again later!");
+                            }
+                        }
+                    });
             }
         });
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtTxtPhone.getVisibility() == View.INVISIBLE) {
-                    edtTxtPhone.setVisibility(View.VISIBLE);
-                    txtInstruction.setText("Enter your phone number" + System.lineSeparator() + "Then press 'Check' button one more time!");
-                    txtInstruction.setVisibility(View.VISIBLE);
-                } else {
-                    if (isValidate(true)){
-                        txtInstruction.setText("check success");
+                resetView();
+                txtQueueInst.setVisibility(View.INVISIBLE);
+                txtCheckInst.setVisibility(View.INVISIBLE);
+                edtTxtPhone.setVisibility(View.VISIBLE);
+                btnSubmit.setVisibility(View.VISIBLE);
+                txtInstruction.setVisibility(View.VISIBLE);
+                txtInstruction.setText("Enter your phone number" + System.lineSeparator() + "Then press 'Submit' button!");
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(isValidate(true)){
+
+                        }
                     }
-                }
+                });
             }
         });
     }
+    public void queueFirebase (int newNumber, String phone, String selectedSlot){
+        WriteBatch batch = db.batch();
+        Map<String, Object> record = new HashMap<>();
+        record.put("Contact", phone);
+        record.put("Identifier", selectedSlot);
+        record.put("QueueNumber", newNumber);
+        record.put("isCompleted", false);
+        DocumentReference infoRef = db.collection("Restaurant").document(restaurantId).collection("QueueInfo").document(selectedSlot);
+        DocumentReference recordRef = db.collection("Restaurant").document(restaurantId).collection("QueueRecord").document(phone);
+        batch.set(recordRef, record);
+        batch.update(infoRef, "Waiting", FieldValue.increment(1));
+        batch.update(infoRef, "Issued", FieldValue.increment(1));
+        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d(TAG, "Upload success");
+                txtInstruction.setText("Get ticket Success!");
+            }
+        });
+    }
+    public void saveQueueInfo(String key, int value){
+        SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
+        SharedPreferences.Editor editor = queueInfo.edit();
+        editor.putInt (key, value);
+        editor.apply();
+        Log.i(TAG,"queueInfo saved");
+    }
+    public void saveQueueSetting (String key, int value){
+        SharedPreferences queueSetting = getSharedPreferences("queueSetting", MODE_PRIVATE);
+        SharedPreferences.Editor editor = queueSetting.edit();
+        editor.putInt(key, value);
+        editor.apply();
+        Log.i(TAG, "queueSetting saved");
+    }
+    public int getQueueInfo(String key){
+        SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
+        int issued = queueInfo.getInt(key, 0);
+        return issued;
+    }
+    public int getLimit(String key){
+        SharedPreferences queueSetting = getSharedPreferences("queueSetting", MODE_PRIVATE);
+        int limit = queueSetting.getInt(key, 0);
+        return limit;
+    }
+    public void updateView(){
+        SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
+        String slotACurrent = String.valueOf(queueInfo.getInt("slotACurrent",0));
+        txtSlotACurrent.setText("Current: " + slotACurrent);
+        String slotBCurrent = String.valueOf(queueInfo.getInt("slotBCurrent",0));
+        txtSlotBCurrent.setText("Current: " + slotBCurrent);
+        String slotCCurrent = String.valueOf(queueInfo.getInt("slotCCurrent",0));
+        txtSlotCCurrent.setText("Current: " + slotCCurrent);
+        String slotAWaiting = String.valueOf(queueInfo.getInt("slotAWaiting", 0));
+        txtSlotAWaiting.setText("Waiting: " + slotAWaiting);
+        String slotBWaiting = String.valueOf(queueInfo.getInt("slotBWaiting", 0));
+        txtSlotBWaiting.setText("Waiting: " + slotBWaiting);
+        String slotCWaiting = String.valueOf(queueInfo.getInt("slotCWaiting", 0));
+        txtSlotCWaiting.setText("Waiting: " + slotCWaiting);
+        Log.i(TAG, "View update success");
+    }
+    public void checkExistQueue (){
+        Log.i(TAG, "checking Existing Queue");
+        String phone =edtTxtPhone.getText().toString();
+        db.collection("Restaurant").document(restaurantId).collection("QueueRecord")
+                .whereEqualTo("Contact", phone).whereEqualTo("isCompleted", false)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: is successful");
+                            QuerySnapshot document = task.getResult();
+                            if (document.isEmpty()){
+                                String selectedSlot = slotSpinner.getSelectedItem().toString();
+                                String newSlot = selectedSlot.substring(0, 1).toUpperCase() + selectedSlot.substring(1);
+                                String issuedKey = selectedSlot + "Issued";
+                                int issued = getQueueInfo(issuedKey);
+                                String phone = edtTxtPhone.getText().toString();
+                                int newNumber = issued += 1;
+                                queueFirebase(newNumber, phone, newSlot);
+                            } else {
+                                txtInstruction.setText("you already have a existing queue ticket"  + System.lineSeparator() + "click Check button to check your ticket!");
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
     public boolean isValidate(boolean check){
-        if (check == false) {
+        Log.d(TAG, "isValidate: try validate");
+        if (!check) {
             String selected = slotSpinner.getSelectedItem().toString();
             if (selected == null) {
                 txtInstruction.setText("Please select your preferred slot");
@@ -133,7 +257,7 @@ public class restaurantPage extends AppCompatActivity {
         String phone = edtTxtPhone.getText().toString();
         boolean isNumber = android.text.TextUtils.isDigitsOnly(phone);
         int length = phone.length();
-        if (isNumber == true && length == 8) {
+        if (isNumber && length == 8) {
             return true;
         } else {
             if (length == 0) {
@@ -142,7 +266,7 @@ public class restaurantPage extends AppCompatActivity {
             } else if (length != 8) {
                 txtInstruction.setText("Please enter 8 charaters phone number!");
                 return false;
-            } else if (isNumber == false) {
+            } else if (!isNumber) {
                 txtInstruction.setText("Accept number only!");
                 return false;
             }
@@ -152,9 +276,9 @@ public class restaurantPage extends AppCompatActivity {
     public void initSpinner (){
         slotSpinner = findViewById(R.id.slotSpinner);
         final ArrayList <String> slots = new ArrayList<>();
-        slots.add("SlotA");
-        slots.add("SlotB");
-        slots.add("SlotC");
+        slots.add("slotA");
+        slots.add("slotB");
+        slots.add("slotC");
         ArrayAdapter<String> slotsAdapter = new ArrayAdapter<>(
                 restaurantPage.this,
                 android.R.layout.simple_spinner_dropdown_item,
@@ -162,20 +286,6 @@ public class restaurantPage extends AppCompatActivity {
         );
         slotsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         slotSpinner.setAdapter(slotsAdapter);
-//        slotSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                selectedSlot = slots.get(position);
-//                s
-//                store.edit().putString("selectedSlot", selectedSlot);
-//                store.edit().commit();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
     }
 
     public static void actionStart(Context context, String data){
@@ -188,8 +298,6 @@ public class restaurantPage extends AppCompatActivity {
         restaurantId = intent.getStringExtra("RestaurantId");
     }
     public void fbLoadData() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         DocumentReference restaurantInfo = db.collection("Restaurant").document(restaurantId);
         restaurantInfo.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -219,43 +327,79 @@ public class restaurantPage extends AppCompatActivity {
                     return;
                 }
                 for (QueryDocumentSnapshot doc : value) {
-                       switch (doc.getString("Identifier")) {
+                    int Current = doc.getLong("Current").intValue();
+                    int Waiting = doc.getLong("Waiting").intValue();
+                    int Issued = doc.getLong("Issued").intValue();
+                    switch (doc.getString("Identifier")) {
                            case "SlotA":
-                               txtSlotACurrent.setText(doc.getLong("Current").toString());
-                               txtSlotAWaiting.setText(doc.getLong("Waiting").toString());
+                               saveQueueInfo("slotACurrent", Current);
+                               saveQueueInfo("slotAWaiting", Waiting);
+                               saveQueueInfo("slotAIssued", Issued);
                            case "SlotB":
-                               txtSlotBCurrent.setText(doc.getLong("Current").toString());
-                               txtSlotBWaiting.setText(doc.getLong("Waiting").toString());
-                           case "SlotC":
-                               txtSlotCCurrent.setText(doc.getLong("Current").toString());
-                               txtSlotCWaiting.setText(doc.getLong("Waiting").toString());
-                       }
+                               saveQueueInfo("slotBCurrent", Current);
+                               saveQueueInfo("slotBWaiting", Waiting);
+                               saveQueueInfo("slotBIssued", Issued);
+
+                        case "SlotC":
+                               saveQueueInfo("slotCCurrent", Current);
+                               saveQueueInfo("slotCWaiting", Waiting);
+                            saveQueueInfo("slotCIssued", Issued);
+
+                    }
+                    updateView();
                 }
             }
         });
 
         CollectionReference queueSetting = db.collection("Restaurant").document(restaurantId).collection("QueueSetting");
-        queueSetting.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-                for (QueryDocumentSnapshot doc : value) {
-                    String min = doc.getLong("MinPax").toString();
-                    String max = doc.getLong("MaxPax").toString();
-                    switch (doc.getString("Identifier")) {
-                        case "SlotA":
-                            txtSlotAPax.setText("SlotA - " + min + "-" + max + " Pax");
-                        case "SlotB":
-                            txtSlotBPax.setText("SlotB - " + min + "-" + max + " Pax");
-                        case "SlotC":
-                            txtSlotCPax.setText("SlotC - " + min + "-" + max + " Pax");
+//        queueSetting.addSnapshotListener(new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot value,
+//                                @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    Log.w(TAG, "Listen failed.", e);
+//                    return;
+//                }
+//                for (QueryDocumentSnapshot doc : value) {
+//                    String min = doc.getLong("MinPax").toString();
+//                    String max = doc.getLong("MaxPax").toString();
+//                    switch (doc.getString("Identifier")) {
+//                        case "SlotA":
+//                            txtSlotAPax.setText("SlotA - " + min + "-" + max + " Pax");
+//                        case "SlotB":
+//                            txtSlotBPax.setText("SlotB - " + min + "-" + max + " Pax");
+//                        case "SlotC":
+//                            txtSlotCPax.setText("SlotC - " + min + "-" + max + " Pax");
+//                    }
+//                }
+//            }
+//        });
+                queueSetting.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String min = document.getLong("MinPax").toString();
+                                String max = document.getLong("MaxPax").toString();
+                                int limit = document.getLong("QueueLimit").intValue();
+                                switch (document.getString("Identifier")) {
+                                    case "SlotA":
+                                        txtSlotAPax.setText("SlotA - " + min + "-" + max + " Pax");
+                                        saveQueueSetting("slotALimit", limit);
+                                    case "SlotB":
+                                        txtSlotBPax.setText("SlotB - " + min + "-" + max + " Pax");
+                                        saveQueueSetting("slotBLimit", limit);
+                                    case "SlotC":
+                                        txtSlotCPax.setText("SlotC - " + min + "-" + max + " Pax");
+                                        saveQueueSetting("slotCLimit", limit);
+                                }
+                                Log.d(TAG, "queue setting loaded");
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 }

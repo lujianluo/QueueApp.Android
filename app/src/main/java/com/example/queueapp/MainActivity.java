@@ -2,13 +2,14 @@ package com.example.queueapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import static android.graphics.Color.rgb;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,13 +21,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
-        btnEnter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(checkEmpty()){
-                    String restaurantId = edtTxtrestaurantId.getText().toString();
-                    restaurantPage.actionStart(MainActivity.this, restaurantId);
-                }
+        btnEnter.setOnClickListener(v -> {
+            if(checkEmpty()){
+                String restaurantId = edtTxtrestaurantId.getText().toString();
+                restaurantPage.actionStart(MainActivity.this, restaurantId);
             }
         });
     }
@@ -34,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         edtTxtrestaurantId = findViewById(R.id.edtResID);
         btnEnter = findViewById(R.id.btnEnter);
+
     }
 
     private boolean checkEmpty(){
