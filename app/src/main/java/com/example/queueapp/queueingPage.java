@@ -76,7 +76,7 @@ public class queueingPage extends AppCompatActivity {
         txtSlot = findViewById(R.id.txtSlot);
         txtNumber = findViewById(R.id.txtNumber);
         txtPhone = findViewById(R.id.txtPhone);
-        txtPhone.setText("Contact:" + System.lineSeparator() + contact);
+        txtPhone.setText("Contact:" + contact);
         txtCurrent = findViewById(R.id.txtCurrent);
         btnCancel = findViewById(R.id.btnCancel);
     }
@@ -132,8 +132,8 @@ public class queueingPage extends AppCompatActivity {
                         String number = document.getLong("QueueNumber").toString();
                         saveStringData("identifier", identifier);
                         saveStringData("number", number);
-                        txtSlot.setText("Your Slot: " + System.lineSeparator() + identifier);
-                        txtNumber.setText("Your Number: " + System.lineSeparator() + number);
+                        txtSlot.setText("Your Slot: "  + identifier);
+                        txtNumber.setText("Your Number: " + number);
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -155,7 +155,7 @@ public class queueingPage extends AppCompatActivity {
                         }
                         if (snapshot != null && snapshot.exists()) {
                             String current = snapshot.getLong("Current").toString();
-                            txtCurrent.setText("Now Calling: " + System.lineSeparator() + current);
+                            txtCurrent.setText("Now Calling: "  + current);
                             saveStringData("current", current);
                             compare(current);
                         } else {
