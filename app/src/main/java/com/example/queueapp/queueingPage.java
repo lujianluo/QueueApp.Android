@@ -66,13 +66,13 @@ public class queueingPage extends AppCompatActivity {
         context.startActivity(intent);
     }
 
-    public void receiveProps() {
+    private void receiveProps() {
         Intent intent = getIntent();
         restaurantId = intent.getStringExtra("restaurantId");
         contact = intent.getStringExtra("contact");
     }
 
-    public void initViews() {
+    private void initViews() {
         txtSlot = findViewById(R.id.txtSlot);
         txtNumber = findViewById(R.id.txtNumber);
         txtPhone = findViewById(R.id.txtPhone);
@@ -81,7 +81,7 @@ public class queueingPage extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
     }
 
-    public void saveStringData(String key, String value) {
+    private void saveStringData(String key, String value) {
         SharedPreferences stringData = getSharedPreferences("stringData", MODE_PRIVATE);
         SharedPreferences.Editor editor = stringData.edit();
         editor.putString(key, value);
@@ -89,13 +89,13 @@ public class queueingPage extends AppCompatActivity {
         Log.i(TAG, "data saved");
     }
 
-    public String loadStringData(String key) {
+    private String loadStringData(String key) {
         SharedPreferences stringData = getSharedPreferences("stringData", MODE_PRIVATE);
         String data = stringData.getString(key, "0");
         return data;
     }
 
-    public void initListener() {
+    private void initListener() {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +120,7 @@ public class queueingPage extends AppCompatActivity {
         });
     }
 
-    public void fbLoadData() {
+    private void fbLoadData() {
         db.collection("Restaurant").document(restaurantId).collection("QueueRecord").document(contact)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -164,7 +164,7 @@ public class queueingPage extends AppCompatActivity {
                     }
                 });
     }
-    public void compare(String current){
+    private void compare(String current){
         int num = Integer.parseInt(loadStringData("number"));
         int now = Integer.parseInt(loadStringData("current"));
         if (num-now<10){
@@ -190,7 +190,7 @@ public class queueingPage extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
-    public void notification(String text){
+    private void notification(String text){
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(getApplicationContext(), queueingPage.class);

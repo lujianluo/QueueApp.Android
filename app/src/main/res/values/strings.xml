@@ -15,4 +15,6 @@
     <string name="welcome">Welcome</string>
     <string name="txt_instruction">Instruction</string>
     <string name="textview">TextView</string>
+    <string name="login_btn">Login</string>
+    <string name="register_btn">Register</string>
 </resources>
