@@ -60,14 +60,14 @@ public class restaurantPage extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
-
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         fbLoadData();
         initViews();
         initListener();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +75,8 @@ public class restaurantPage extends AppCompatActivity {
         receiveProps();
 
     }
-    private void initViews(){
+
+    private void initViews() {
         txtRestaurantName = findViewById(R.id.restaurantName);
         txtSlotAPax = findViewById(R.id.slotAPax);
         txtSlotACurrent = findViewById(R.id.slotACurrent);
@@ -87,7 +88,7 @@ public class restaurantPage extends AppCompatActivity {
         txtSlotCCurrent = findViewById(R.id.slotCCurrent);
         txtSlotCWaiting = findViewById(R.id.slotCWaiting);
         edtTxtPhone = findViewById(R.id.edtTxtphone);
-        btnCheck =findViewById(R.id.btnCheck);
+        btnCheck = findViewById(R.id.btnCheck);
         btnQueue = findViewById(R.id.btnQueue);
         edtTxtPhone = findViewById(R.id.edtTxtphone);
         txtInstruction = findViewById(R.id.txtInstruction);
@@ -96,7 +97,8 @@ public class restaurantPage extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btnSubmit);
         initSpinner();
     }
-    public void resetView(){
+
+    public void resetView() {
         txtCheckInst.setVisibility(View.VISIBLE);
         txtQueueInst.setVisibility(View.VISIBLE);
         txtInstruction.setVisibility(View.INVISIBLE);
@@ -104,7 +106,8 @@ public class restaurantPage extends AppCompatActivity {
         btnSubmit.setVisibility(View.INVISIBLE);
         slotSpinner.setVisibility(View.INVISIBLE);
     }
-    public void initListener(){
+
+    public void initListener() {
         btnQueue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,23 +119,23 @@ public class restaurantPage extends AppCompatActivity {
                 btnSubmit.setVisibility(View.VISIBLE);
                 slotSpinner.setVisibility(View.VISIBLE);
                 txtInstruction.setText("Enter your phone number" + System.lineSeparator() + "Select you preferred slot" + System.lineSeparator() + "Then press 'Submit' button!");
-                    btnSubmit.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            String selectedSlot = slotSpinner.getSelectedItem().toString();
-                            String waitingKey = selectedSlot + "Waiting";
-                            int waiting = getQueueInfo(waitingKey);
-                            String limitKey = selectedSlot + "Limit";
-                            int limit = getLimit(limitKey);
-                            if (waiting < limit) {
-                                if(isValidate(false)) {
-                                    checkExistQueue(false);
-                                }
-                            } else {
-                                txtInstruction.setText("Queue limit reach" + System.lineSeparator() + "Please select another slot" + System.lineSeparator() + "Or try again later!");
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String selectedSlot = slotSpinner.getSelectedItem().toString();
+                        String waitingKey = selectedSlot + "Waiting";
+                        int waiting = getQueueInfo(waitingKey);
+                        String limitKey = selectedSlot + "Limit";
+                        int limit = getLimit(limitKey);
+                        if (waiting < limit) {
+                            if (isValidate(false)) {
+                                checkExistQueue(false);
                             }
+                        } else {
+                            txtInstruction.setText("Queue limit reach" + System.lineSeparator() + "Please select another slot" + System.lineSeparator() + "Or try again later!");
                         }
-                    });
+                    }
+                });
             }
         });
         btnCheck.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +151,7 @@ public class restaurantPage extends AppCompatActivity {
                 btnSubmit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(isValidate(true)){
+                        if (isValidate(true)) {
                             checkExistQueue(true);
                         }
                     }
@@ -156,18 +159,19 @@ public class restaurantPage extends AppCompatActivity {
             }
         });
     }
-    public void queueFirebase (int newNumber, String phone, String selectedSlot){
+
+    public void queueFirebase(int newNumber, String phone, String selectedSlot) {
         WriteBatch batch = db.batch();
         Map<String, Object> record = new HashMap<>();
-        record.put("Contact", phone);
-        record.put("Identifier", selectedSlot);
-        record.put("QueueNumber", newNumber);
+        record.put("contact", phone);
+        record.put("identifier", selectedSlot);
+        record.put("queueNumber", newNumber);
         record.put("isCompleted", false);
-        DocumentReference infoRef = db.collection("Restaurant").document(restaurantId).collection("QueueInfo").document(selectedSlot);
-        DocumentReference recordRef = db.collection("Restaurant").document(restaurantId).collection("QueueRecord").document(phone);
+        DocumentReference infoRef = db.collection("restaurant").document(restaurantId).collection("queueInfo").document(selectedSlot);
+        DocumentReference recordRef = db.collection("restaurant").document(restaurantId).collection("queueRecord").document(phone);
         batch.set(recordRef, record);
-        batch.update(infoRef, "Waiting", FieldValue.increment(1));
-        batch.update(infoRef, "Issued", FieldValue.increment(1));
+        batch.update(infoRef, "waiting", FieldValue.increment(1));
+        batch.update(infoRef, "issued", FieldValue.increment(1));
         batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -176,37 +180,42 @@ public class restaurantPage extends AppCompatActivity {
             }
         });
     }
-    public void saveQueueInfo(String key, int value){
+
+    public void saveQueueInfo(String key, int value) {
         SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
         SharedPreferences.Editor editor = queueInfo.edit();
-        editor.putInt (key, value);
+        editor.putInt(key, value);
         editor.apply();
-        Log.i(TAG,"queueInfo saved");
+        Log.i(TAG, "queueInfo saved");
     }
-    public void saveQueueSetting (String key, int value){
+
+    public void saveQueueSetting(String key, int value) {
         SharedPreferences queueSetting = getSharedPreferences("queueSetting", MODE_PRIVATE);
         SharedPreferences.Editor editor = queueSetting.edit();
         editor.putInt(key, value);
         editor.apply();
         Log.i(TAG, "queueSetting saved");
     }
-    public int getQueueInfo(String key){
+
+    public int getQueueInfo(String key) {
         SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
         int issued = queueInfo.getInt(key, 0);
         return issued;
     }
-    public int getLimit(String key){
+
+    public int getLimit(String key) {
         SharedPreferences queueSetting = getSharedPreferences("queueSetting", MODE_PRIVATE);
         int limit = queueSetting.getInt(key, 0);
         return limit;
     }
-    public void updateView(){
+
+    public void updateView() {
         SharedPreferences queueInfo = getSharedPreferences("queueInfo", MODE_PRIVATE);
-        String slotACurrent = String.valueOf(queueInfo.getInt("slotACurrent",0));
+        String slotACurrent = String.valueOf(queueInfo.getInt("slotACurrent", 0));
         txtSlotACurrent.setText("Current: " + slotACurrent);
-        String slotBCurrent = String.valueOf(queueInfo.getInt("slotBCurrent",0));
+        String slotBCurrent = String.valueOf(queueInfo.getInt("slotBCurrent", 0));
         txtSlotBCurrent.setText("Current: " + slotBCurrent);
-        String slotCCurrent = String.valueOf(queueInfo.getInt("slotCCurrent",0));
+        String slotCCurrent = String.valueOf(queueInfo.getInt("slotCCurrent", 0));
         txtSlotCCurrent.setText("Current: " + slotCCurrent);
         String slotAWaiting = String.valueOf(queueInfo.getInt("slotAWaiting", 0));
         txtSlotAWaiting.setText("Waiting: " + slotAWaiting);
@@ -216,11 +225,12 @@ public class restaurantPage extends AppCompatActivity {
         txtSlotCWaiting.setText("Waiting: " + slotCWaiting);
         Log.i(TAG, "View update success");
     }
-    public void checkExistQueue (boolean isQueueing){
+
+    public void checkExistQueue(boolean isQueueing) {
         Log.i(TAG, "checking Existing Queue");
-        String phone =edtTxtPhone.getText().toString();
-        db.collection("Restaurant").document(restaurantId).collection("QueueRecord")
-                .whereEqualTo("Contact", phone).whereEqualTo("isCompleted", false)
+        String phone = edtTxtPhone.getText().toString();
+        db.collection("restaurant").document(restaurantId).collection("queueRecord")
+                .whereEqualTo("contact", phone).whereEqualTo("isCompleted", false)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -228,21 +238,23 @@ public class restaurantPage extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: is successful");
                             QuerySnapshot document = task.getResult();
-                            String phone = edtTxtPhone.getText().toString();
-                            if (document.isEmpty()){
-                                if(!isQueueing) {
+                            if (document.isEmpty()) {
+                                if (!isQueueing) {
                                     String selectedSlot = slotSpinner.getSelectedItem().toString();
-                                    String newSlot = selectedSlot.substring(0, 1).toUpperCase() + selectedSlot.substring(1);
                                     String issuedKey = selectedSlot + "Issued";
                                     int issued = getQueueInfo(issuedKey);
                                     int newNumber = issued += 1;
-                                    queueFirebase(newNumber, phone, newSlot);
+                                    queueFirebase(newNumber, phone, selectedSlot);
                                     queueingPage.actionStart(restaurantPage.this, restaurantId, phone);
                                 } else {
                                     txtInstruction.setText("No record found, please get a ticket first!");
                                 }
                             } else {
+                                if (isQueueing) {
                                     queueingPage.actionStart(restaurantPage.this, restaurantId, phone);
+                                } else {
+                                    txtInstruction.setText("Your already have a ticket" + System.lineSeparator() + "click Check button to check");
+                                }
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -250,7 +262,8 @@ public class restaurantPage extends AppCompatActivity {
                     }
                 });
     }
-    public boolean isValidate(boolean check){
+
+    public boolean isValidate(boolean check) {
         Log.d(TAG, "isValidate: try validate");
         if (!check) {
             String selected = slotSpinner.getSelectedItem().toString();
@@ -278,9 +291,10 @@ public class restaurantPage extends AppCompatActivity {
             return false;
         }
     }
-    public void initSpinner (){
+
+    public void initSpinner() {
         slotSpinner = findViewById(R.id.slotSpinner);
-        final ArrayList <String> slots = new ArrayList<>();
+        final ArrayList<String> slots = new ArrayList<>();
         slots.add("slotA");
         slots.add("slotB");
         slots.add("slotC");
@@ -293,17 +307,19 @@ public class restaurantPage extends AppCompatActivity {
         slotSpinner.setAdapter(slotsAdapter);
     }
 
-    public static void actionStart(Context context, String restaurantId){
+    public static void actionStart(Context context, String restaurantId) {
         Intent intent = new Intent(context, restaurantPage.class);
         intent.putExtra("restaurantId", restaurantId);
         context.startActivity(intent);
     }
-    public void receiveProps(){
+
+    public void receiveProps() {
         Intent intent = getIntent();
         restaurantId = intent.getStringExtra("restaurantId");
     }
+
     public void fbLoadData() {
-        DocumentReference restaurantInfo = db.collection("Restaurant").document(restaurantId);
+        DocumentReference restaurantInfo = db.collection("restaurant").document(restaurantId);
         restaurantInfo.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -311,7 +327,7 @@ public class restaurantPage extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        String name = document.getString("RestaurantName");
+                        String name = document.getString("restaurantName");
                         txtRestaurantName.setText(restaurantId + " - " + name);
                     } else {
                         Log.d(TAG, "No such document");
@@ -322,7 +338,7 @@ public class restaurantPage extends AppCompatActivity {
             }
         });
 
-        CollectionReference queueInfo = db.collection("Restaurant").document(restaurantId).collection("QueueInfo");
+        CollectionReference queueInfo = db.collection("restaurant").document(restaurantId).collection("queueInfo");
         queueInfo.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
@@ -332,22 +348,22 @@ public class restaurantPage extends AppCompatActivity {
                     return;
                 }
                 for (QueryDocumentSnapshot doc : value) {
-                    int Current = doc.getLong("Current").intValue();
-                    int Waiting = doc.getLong("Waiting").intValue();
-                    int Issued = doc.getLong("Issued").intValue();
-                    switch (doc.getString("Identifier")) {
-                           case "SlotA":
-                               saveQueueInfo("slotACurrent", Current);
-                               saveQueueInfo("slotAWaiting", Waiting);
-                               saveQueueInfo("slotAIssued", Issued);
-                           case "SlotB":
-                               saveQueueInfo("slotBCurrent", Current);
-                               saveQueueInfo("slotBWaiting", Waiting);
-                               saveQueueInfo("slotBIssued", Issued);
+                    int Current = doc.getLong("current").intValue();
+                    int Waiting = doc.getLong("waiting").intValue();
+                    int Issued = doc.getLong("issued").intValue();
+                    switch (doc.getString("identifier")) {
+                        case "slotA":
+                            saveQueueInfo("slotACurrent", Current);
+                            saveQueueInfo("slotAWaiting", Waiting);
+                            saveQueueInfo("slotAIssued", Issued);
+                        case "slotB":
+                            saveQueueInfo("slotBCurrent", Current);
+                            saveQueueInfo("slotBWaiting", Waiting);
+                            saveQueueInfo("slotBIssued", Issued);
 
-                        case "SlotC":
-                               saveQueueInfo("slotCCurrent", Current);
-                               saveQueueInfo("slotCWaiting", Waiting);
+                        case "slotC":
+                            saveQueueInfo("slotCCurrent", Current);
+                            saveQueueInfo("slotCWaiting", Waiting);
                             saveQueueInfo("slotCIssued", Issued);
 
                     }
@@ -356,7 +372,7 @@ public class restaurantPage extends AppCompatActivity {
             }
         });
 
-        CollectionReference queueSetting = db.collection("Restaurant").document(restaurantId).collection("QueueSetting");
+        CollectionReference queueSetting = db.collection("restaurant").document(restaurantId).collection("queueSetting");
 //        queueSetting.addSnapshotListener(new EventListener<QuerySnapshot>() {
 //            @Override
 //            public void onEvent(@Nullable QuerySnapshot value,
@@ -379,23 +395,23 @@ public class restaurantPage extends AppCompatActivity {
 //                }
 //            }
 //        });
-                queueSetting.get()
+        queueSetting.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String min = document.getLong("MinPax").toString();
-                                String max = document.getLong("MaxPax").toString();
-                                int limit = document.getLong("QueueLimit").intValue();
-                                switch (document.getString("Identifier")) {
-                                    case "SlotA":
+                                String min = document.getLong("minPax").toString();
+                                String max = document.getLong("maxPax").toString();
+                                int limit = document.getLong("queueLimit").intValue();
+                                switch (document.getString("identifier")) {
+                                    case "slotA":
                                         txtSlotAPax.setText("SlotA - " + min + "-" + max + " Pax");
                                         saveQueueSetting("slotALimit", limit);
-                                    case "SlotB":
+                                    case "slotB":
                                         txtSlotBPax.setText("SlotB - " + min + "-" + max + " Pax");
                                         saveQueueSetting("slotBLimit", limit);
-                                    case "SlotC":
+                                    case "slotC":
                                         txtSlotCPax.setText("SlotC - " + min + "-" + max + " Pax");
                                         saveQueueSetting("slotCLimit", limit);
                                 }

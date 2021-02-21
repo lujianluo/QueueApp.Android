@@ -25,11 +25,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText edtTxtrestaurantId;
+    private EditText edtTxtRestaurantId;
     private TextView txtBusinessEntry;
     private Button btnEnter;
     private static final String TAG = "mainPage";
-    private FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
@@ -40,28 +39,20 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         initListener();
     }
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth = FirebaseAuth.getInstance();
-            // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            adminPage.actionStart(MainActivity.this);
-        }
-    }
+
     public static void actionStart(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
         context.startActivity(intent);
     }
+
     private void initViews() {
-        edtTxtrestaurantId = findViewById(R.id.edtResID);
+        edtTxtRestaurantId = findViewById(R.id.edtResID);
         btnEnter = findViewById(R.id.btnEnter);
         txtBusinessEntry = findViewById(R.id.txtBusinessEntey);
         txtBusinessEntry.setText("For business administration, please click here to join us!");
     }
 
-    private void initListener(){
+    private void initListener() {
         txtBusinessEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,20 +64,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isValid()) {
-                    String restaurantId = edtTxtrestaurantId.getText().toString();
+                    String restaurantId = edtTxtRestaurantId.getText().toString();
                     restaurantPage.actionStart(MainActivity.this, restaurantId);
                 }
             }
         });
     }
+
     private boolean isValid() {
-        String userInput = edtTxtrestaurantId.getText().toString();
+        String userInput = edtTxtRestaurantId.getText().toString();
         boolean isNumber = android.text.TextUtils.isDigitsOnly(userInput);
         int length = userInput.length();
         if (isNumber && length != 0) {
-            int num = Integer.parseInt(userInput);
-            db.collection("Restaurant")
-                    .whereEqualTo("RestaurantId", num)
+            db.collection("restaurant")
+                    .whereEqualTo("restaurantId", userInput)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override

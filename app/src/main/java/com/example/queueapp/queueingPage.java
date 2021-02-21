@@ -99,7 +99,7 @@ public class queueingPage extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.collection("Restaurant").document(restaurantId).collection("QueueRecord").document(contact)
+                db.collection("restaurant").document(restaurantId).collection("queueRecord").document(contact)
                         .update("isCompleted", true)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -121,18 +121,18 @@ public class queueingPage extends AppCompatActivity {
     }
 
     private void fbLoadData() {
-        db.collection("Restaurant").document(restaurantId).collection("QueueRecord").document(contact)
+        db.collection("restaurant").document(restaurantId).collection("queueRecord").document(contact)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        String identifier = document.getString("Identifier");
-                        String number = document.getLong("QueueNumber").toString();
+                        String identifier = document.getString("identifier");
+                        String number = document.getLong("queueNumber").toString();
                         saveStringData("identifier", identifier);
                         saveStringData("number", number);
-                        txtSlot.setText("Your Slot: "  + identifier);
+                        txtSlot.setText("Your Slot: " + identifier);
                         txtNumber.setText("Your Number: " + number);
                     } else {
                         Log.d(TAG, "No such document");
@@ -144,7 +144,7 @@ public class queueingPage extends AppCompatActivity {
         });
         String identifier = loadStringData("identifier");
         Log.d(TAG, "fbLoadData: identifier: " + identifier);
-        db.collection("Restaurant").document(restaurantId).collection("QueueInfo").document(identifier)
+        db.collection("restaurant").document(restaurantId).collection("queueInfo").document(identifier)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot snapshot,
@@ -154,8 +154,8 @@ public class queueingPage extends AppCompatActivity {
                             return;
                         }
                         if (snapshot != null && snapshot.exists()) {
-                            String current = snapshot.getLong("Current").toString();
-                            txtCurrent.setText("Now Calling: "  + current);
+                            String current = snapshot.getLong("current").toString();
+                            txtCurrent.setText("Now Calling: " + current);
                             saveStringData("current", current);
                             compare(current);
                         } else {
@@ -164,17 +164,19 @@ public class queueingPage extends AppCompatActivity {
                     }
                 });
     }
-    private void compare(String current){
+
+    private void compare(String current) {
         int num = Integer.parseInt(loadStringData("number"));
         int now = Integer.parseInt(loadStringData("current"));
-        if (num-now<10){
+        if (num - now < 10) {
             notification("Less than 10 tables ahead, we are calling your number soon");
-        } else if (num-now<5){
+        } else if (num - now < 5) {
             notification("Less than 5 tables ahead, we are calling your number soon");
-        } else if (num==now){
+        } else if (num == now) {
             notification("you are called, present your App screen for validating!");
         }
     }
+
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -190,7 +192,8 @@ public class queueingPage extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
-    private void notification(String text){
+
+    private void notification(String text) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(getApplicationContext(), queueingPage.class);
