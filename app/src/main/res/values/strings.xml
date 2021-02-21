@@ -26,4 +26,7 @@
     <string name="slotCLimit">Max Queue Capacity for SlotC</string>
     <string name="slotCMax">Max Pax for SlotC</string>
     <string name="slotCMin">Min Pax for SlotC</string>
+    <string name="setting_btn">Setting</string>
+    <string name="signout_btn">Sign Out</string>
+    <string name="call_btn_inst">Click the corresponding button to call a queue ticket!</string>
 </resources>

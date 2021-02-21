@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "895585037833",
+    "firebase_url": "https://queueappandroid-default-rtdb.firebaseio.com",
+    "project_id": "queueappandroid",
+    "storage_bucket": "queueappandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895585037833:android:1bd555032db79e42a912d8",
+        "android_client_info": {
+          "package_name": "com.example.queueapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "895585037833-fcpvpu59nqtu9egdkkp2q1k47lscf7rv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB7rsZzpZpnmib8OLYMt4OCN9U0Y2d4lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "895585037833-fcpvpu59nqtu9egdkkp2q1k47lscf7rv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
