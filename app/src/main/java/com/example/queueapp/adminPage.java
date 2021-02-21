@@ -114,97 +114,115 @@ public class adminPage extends AppCompatActivity {
         btnSlotA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String current = loadData("slotACurrent");
-                int intCurrent = Integer.parseInt(current);
-                int callNumber = intCurrent += 1;
-                Log.d(TAG, "onClick: callNumber: " + callNumber);
-                db.collection("restaurant").document(restaurantId).collection("queueRecord")
-                        .whereEqualTo("identifier", "slotA")
-                        .whereEqualTo("queueNumber", callNumber)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "onComplete: task completed");
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String contact = document.getString("contact");
-                                        txtContact.setText("Contact of ticket called: " + contact);
-                                        saveData("newContact", contact);
-                                        Log.d(TAG, "onComplete: contact save:" + contact);
-                                        Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
-                                        update(aInfo, restaurantId);
+                String slotAWaiting = loadData("slotAWaiting");
+                int intSlotAWaiting = Integer.parseInt(slotAWaiting);
+                if (intSlotAWaiting > 0) {
+                    String current = loadData("slotACurrent");
+                    int intCurrent = Integer.parseInt(current);
+                    int callNumber = intCurrent += 1;
+                    Log.d(TAG, "onClick: callNumber: " + callNumber);
+                    db.collection("restaurant").document(restaurantId).collection("queueRecord")
+                            .whereEqualTo("identifier", "slotA")
+                            .whereEqualTo("queueNumber", callNumber)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "onComplete: task completed");
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String contact = document.getString("contact");
+                                            txtContact.setText("Contact of ticket called: " + contact);
+                                            saveData("newContact", contact);
+                                            Log.d(TAG, "onComplete: contact save:" + contact);
+                                            Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
+                                            update(aInfo, restaurantId);
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
+                                        Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                    Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    Toast.makeText(adminPage.this,"No ticket to call!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnSlotB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String current = loadData("slotBCurrent");
-                int intCurrent = Integer.parseInt(current);
-                int callNumber = intCurrent += 1;
-                Log.d(TAG, "onClick: callNumber: " + callNumber);
-                db.collection("restaurant").document(restaurantId).collection("queueRecord")
-                        .whereEqualTo("identifier", "slotB")
-                        .whereEqualTo("queueNumber", callNumber)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "onComplete: task completed");
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String contact = document.getString("contact");
-                                        txtContact.setText("Contact: " + contact);
-                                        saveData("newContact", contact);
-                                        Log.d(TAG, "onComplete: contact save:" + contact);
-                                        Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
-                                        update(bInfo, restaurantId);
+                String slotBWaiting = loadData("slotBWaiting");
+                int intSlotBWaiting = Integer.parseInt(slotBWaiting);
+                if (intSlotBWaiting > 0) {
+                    String current = loadData("slotBCurrent");
+                    int intCurrent = Integer.parseInt(current);
+                    int callNumber = intCurrent += 1;
+                    Log.d(TAG, "onClick: callNumber: " + callNumber);
+                    db.collection("restaurant").document(restaurantId).collection("queueRecord")
+                            .whereEqualTo("identifier", "slotB")
+                            .whereEqualTo("queueNumber", callNumber)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "onComplete: task completed");
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String contact = document.getString("contact");
+                                            txtContact.setText("Contact: " + contact);
+                                            saveData("newContact", contact);
+                                            Log.d(TAG, "onComplete: contact save:" + contact);
+                                            Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
+                                            update(bInfo, restaurantId);
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
+                                        Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                    Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    Toast.makeText(adminPage.this,"No ticket to call!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnSlotC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String current = loadData("slotCCurrent");
-                int intCurrent = Integer.parseInt(current);
-                int callNumber = intCurrent += 1;
-                Log.d(TAG, "onClick: callNumber: " + callNumber);
-                db.collection("restaurant").document(restaurantId).collection("queueRecord")
-                        .whereEqualTo("identifier", "slotC")
-                        .whereEqualTo("queueNumber", callNumber)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    Log.d(TAG, "onComplete: task completed");
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String contact = document.getString("contact");
-                                        txtContact.setText("Contact: " + contact);
-                                        saveData("newContact", contact);
-                                        Log.d(TAG, "onComplete: contact save:" + contact);
-                                        Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
-                                        update(cInfo, restaurantId);
+                String slotCWaiting = loadData("slotCWaiting");
+                int intSlotCWaiting = Integer.parseInt(slotCWaiting);
+                if (intSlotCWaiting > 0) {
+                    String current = loadData("slotCCurrent");
+                    int intCurrent = Integer.parseInt(current);
+                    int callNumber = intCurrent += 1;
+                    Log.d(TAG, "onClick: callNumber: " + callNumber);
+                    db.collection("restaurant").document(restaurantId).collection("queueRecord")
+                            .whereEqualTo("identifier", "slotC")
+                            .whereEqualTo("queueNumber", callNumber)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "onComplete: task completed");
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String contact = document.getString("contact");
+                                            txtContact.setText("Contact: " + contact);
+                                            saveData("newContact", contact);
+                                            Log.d(TAG, "onComplete: contact save:" + contact);
+                                            Toast.makeText(adminPage.this, "Contact: " + contact, Toast.LENGTH_SHORT).show();
+                                            update(cInfo, restaurantId);
+                                        }
+                                    } else {
+                                        Log.d(TAG, "Error getting documents: ", task.getException());
+                                        Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
-                                    Log.d(TAG, "Error getting documents: ", task.getException());
-                                    Toast.makeText(adminPage.this, "No Record Found", Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    Toast.makeText(adminPage.this,"No ticket to call!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnReset.setOnClickListener(new View.OnClickListener() {
@@ -308,16 +326,19 @@ public class adminPage extends AppCompatActivity {
                                     txtSlotACurrent.setText("Current: " + current);
                                     txtSlotAIssued.setText("Issued :" + issued);
                                     saveData("slotACurrent", current);
+                                    saveData("slotAWaiting", waiting);
                                 case "slotB":
                                     txtSlotBCurrent.setText("Current: " + current);
                                     txtSlotBIssued.setText("Issued: " + issued);
                                     txtSlotBWaiting.setText("Waiting: " + waiting);
                                     saveData("slotBCurrent", current);
+                                    saveData("slotBWaiting", waiting);
                                 case "slotC":
                                     txtSlotCCurrent.setText("Current: " + current);
                                     txtSlotCIssued.setText("Issued: " + issued);
                                     txtSlotCWaiting.setText("Waiting: " + waiting);
                                     saveData("slotCCurrent", current);
+                                    saveData("slotCWaiting", waiting);
                             }
                         }
                         Log.d(TAG, "queueUpdated");
