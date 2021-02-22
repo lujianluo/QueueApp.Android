@@ -134,6 +134,7 @@ public class queueingPage extends AppCompatActivity {
                         saveStringData("number", number);
                         txtSlot.setText("Your Slot: " + identifier);
                         txtNumber.setText("Your Number: " + number);
+                        fbGetCurrent(identifier);
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -142,8 +143,8 @@ public class queueingPage extends AppCompatActivity {
                 }
             }
         });
-        String identifier = loadStringData("identifier");
-        Log.d(TAG, "fbLoadData: identifier: " + identifier);
+    }
+    private void fbGetCurrent(String identifier){
         db.collection("restaurant").document(restaurantId).collection("queueInfo").document(identifier)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -168,12 +169,13 @@ public class queueingPage extends AppCompatActivity {
     private void compare(String current) {
         int num = Integer.parseInt(loadStringData("number"));
         int now = Integer.parseInt(loadStringData("current"));
-        if (num - now < 10) {
-            notification("Less than 10 tables ahead, we are calling your number soon");
+        if (num==now) {
+            notification("you are called, present your App screen for validating!");
+
         } else if (num - now < 5) {
             notification("Less than 5 tables ahead, we are calling your number soon");
-        } else if (num == now) {
-            notification("you are called, present your App screen for validating!");
+        } else if (num - now < 10) {
+            notification("Less than 10 tables ahead, we are calling your number soon");
         }
     }
 
